@@ -1,1 +1,0 @@
-[['iron', 'cement', 'is', 'a', 'ready', 'for', 'use', 'paste'], ['paste', 'is', 'laid', 'as', 'a', 'fillet', 'by', 'putty', 'knife', 'or', 'finger', 'in', 'the', 'mould', 'edges', 'corners', 'of', 'the', 'steel', 'ingot', 'mould'], ['We', 'apply', 'the', 'mould', 'into', 'every', 'object'], ['object', 'requires', 'it']]
