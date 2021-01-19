@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#SBATCH --mem=100m
-#SBATCH -c4
+#SBATCH --mem=64g
+#SBATCH -c20
 #SBATCH --time=7-0
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:8
 #SBATCH --mail-type=BEGIN,END,FAIL,TIME_LIMIT
 #SBATCH --mail-user=aviv.slobodkin@mail.huji.ac.il
-#SBATCH --output=/cs/snapless/oabend/lovodkin93/encoder_masking/slurm/parsing_into_one_file_de%j.out
+#SBATCH --output=/cs/snapless/oabend/lovodkin93/encoder_masking/slurm/parsing_into_one_file_en%j.out
 
 # explanation: receives a file where each line contains a sentence, and UCCA-parses each sentence seperately (but saves them all to the same txt file)
 # how to use: sh parsing_into_one_file.sh <input sentences path> <output dir path (where a ucca_trees.txt file will be saved)> <path to parser model> <leng code (two letters, e.g en> <1 if multiligual parser, and 0 otherwise>

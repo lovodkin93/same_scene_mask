@@ -1,8 +1,17 @@
 import numpy as np
 
 def main():
-    a1 = str([[[1, 1, 1, 1], [1, 1, 1, 1]]])
-    a2 = str([[[2, 2, 2, 2], [2, 2, 2, 2]], [[2, 2, 2, 2], [2, 2, 2, 2]]])
+    a1 = str([[[1, 1, 1, 1],
+               [1, 1, 1, 1]]])
+    a2 = str([
+        [
+        [2, 2, 2, 2],
+        [2, 2, 2, 2]
+        ],
+        [
+        [2, 2, 2, 2], [2, 2, 2, 2]
+        ]
+    ])
     a3 = str([[[3, 3, 3, 3], [3, 3, 3, 3]]])
     a4 = str([[[4, 4, 4, 4], [4, 4, 4, 4]]])
     a5 = str([[[5, 5, 5, 5], [5, 5, 5, 5]]])
@@ -17,7 +26,7 @@ def main():
         f.writelines(elem)
         f.writelines('\n')
     f.close()
-
+    print("done")
     # # how to get the masks line by line:
     # import ast
     # a_file = open("same_scene_masks.txt", "r")

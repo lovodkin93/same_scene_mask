@@ -31,11 +31,21 @@ jinja_environment.assets_environment = assets_env
 Compress(app)
 #
 app.parser = None
-PARSER_MODEL = r"C:\Users\aviv\Dropbox\My PC (DESKTOP-L80CN5A)\Desktop\studies\for the thesis\winscp\Semantic-Structural-Decomposition-for-NMT\code\DSS_rules\models\bert_multilingual_layers_4_layers_pooling_weighted_align_sum" #os.getenv("PARSER_MODEL", os.path.join(SCRIPT_DIR, "..", "models/bert_multilingual_layers_4_layers_pooling_weighted_align_sum"))
+
+def parse_sentence(sent, lang, parser):
+    sent_passage = next(from_text(sent, lang=lang))
+    sent_passage.attrib["lang"] = lang
+    out_passage = next(parser.parse(sent_passage))[0]
+    out_passage.attrib["lang"] = lang
+    root = to_standard(out_passage)
+    xml = tostring(root).decode()
+    return xml
+    
+    
 def get_parser(config):
     if app.parser is None:
         print("Initializing parser...")
-        print("PARSER_MODEL=" + PARSER_MODEL)
+        print("PARSER_MODEL=" + config.args.models[0])
         app.parser = Parser(model_files=config.args.models[0], config=config)
     return app.parser
 
@@ -43,21 +53,34 @@ def parse(config):
     text_path = config.args.passages[0] #r'C:\Users\aviv\Dropbox\My PC (DESKTOP-L80CN5A)\Desktop\delete\not_segmented.txt'
     output_path = config.args.outdir + "/ucca_trees.txt" #r'C:\Users\aviv\Dropbox\My PC (DESKTOP-L80CN5A)\Desktop\studies\for the thesis\winscp\Semantic-Structural-Decomposition-for-NMT\code\DSS_rules\u_trees2.txt'
     output_path = r"{}".format(output_path)
-    f_read = open(text_path, 'r')
+    f_read = open(text_path, 'r', encoding='utf-8')
     sentences = f_read.readlines()
     parser = get_parser(config)
-    output_file = open(output_path, 'w')
-
-    for i, sent in enumerate(sentences):
-        sent_passage = next(from_text(sent, lang=config.args.lang))
-        out_passage = next(parser.parse(sent_passage))[0]
-        out_passage.attrib["lang"] = config.args.lang
-        root = to_standard(out_passage)
-        xml = tostring(root).decode()
-        # to save (all in the same file)
+    output_file = open(output_path, 'w', encoding='utf-8')
+    
+    
+    
+    
+    import pathos.pools as pp
+    lang = config.args.lang
+    p = pp.ProcessPool(6)
+    xmls = p.map(parse_sentence, sentences, [lang]*len(sentences), [parser]*len(sentences))
+    for xml in xmls:
         output_file.writelines(xml)
         output_file.writelines('\n')
         output_file.writelines('\n')
+
+    # for i, sent in enumerate(sentences):
+    #     sent_passage = next(from_text(sent, lang=config.args.lang))
+    #     sent_passage.attrib["lang"] = config.args.lang
+    #     out_passage = next(parser.parse(sent_passage))[0]
+    #     out_passage.attrib["lang"] = config.args.lang
+    #     root = to_standard(out_passage)
+    #     xml = tostring(root).decode()
+    #     # to save (all in the same file)
+    #     output_file.writelines(xml)
+    #     output_file.writelines('\n')
+    #     output_file.writelines('\n')
 
 
         # # to decode
@@ -76,8 +99,8 @@ def parse(config):
     f_read.close()
     output_file.close()
     print("done!")
-    # check what was written - will save each line into a different xml (under "./xmls").
-    input_file = open(output_path, 'r')
+    # # check what was written - will save each line into a different xml (under "./xmls").
+    input_file = open(output_path, 'r', encoding='utf-8')
     sentences = input_file.readlines()
     for i, xml in enumerate(sentences):
         if xml == '\n':
@@ -85,7 +108,7 @@ def parse(config):
         xml_dir = "xmls"
         if not os.path.isdir(f'{xml_dir}'):
             os.mkdir('xmls')
-        b = open(f"{xml_dir}/{i}.xml", "w")
+        b = open(f"{xml_dir}/{int(i/2)+1}.xml", "w", encoding='utf-8')
         b.write(xml)
         b.close()
     input_file.close()
